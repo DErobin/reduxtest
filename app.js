@@ -54,22 +54,26 @@ const initialState = {
 
 //REDUCERS:
 function rootReducer(state, action) {
+    //Cover initial state
+    if(typeof state === 'undefined') {
+        return initialState
+    }
+
     switch(action.type) {
-        case CREATE_CAPTION:
+        case CREATE_CAPTION: {
             let caption = action.payload
             return {
                 captions: [...state.captions, caption]
             }
-        case UPDATE_CAPTION:
-            let copiedCaptions = state.captions.splice() //Copy existing state
+        }
+        case UPDATE_CAPTION: {
+            let copiedCaptions = state.captions.slice() //Copy existing state
             let newCaption = action.payload  //Obtain edited caption
 
             //Find caption that is being edited 
-            let oldCaptionIndex = -1
             let oldCaption
             for(let i=0; i<copiedCaptions.length; i++) {
                 if(copiedCaptions[i].index === newCaption.index) {
-                    oldCaptionIndex = i
                     oldCaption = copiedCaptions[i]
                 }
             }
@@ -78,24 +82,25 @@ function rootReducer(state, action) {
             if(typeof saveCaption !== 'undefined') 
             {
                 if(typeof newCaption.newContent !== 'undefined' && newCaption.newContent !== oldCaption.content) {
-                    saveCaption.content = newCaption.newConent
+                    saveCaption.content = newCaption.newContent
                 }
                 if(typeof newCaption.newStartTime !== 'undefined' && newCaption.newStartTime !== oldCaption.startTime) {
                     saveCaption.startTime = newCaption.newStartTime
                 }
                 if(typeof newCaption.newEndTime !== 'undefined' && newCaption.newEndTime !== oldCaption.endTime) {
-                    saveCaption.endTime = newCaption.endTime
+                    saveCaption.endTime = newCaption.newEndTime
                 }
             } else {
-                console.error('Caption with index' + newCaption.index + 'does not exist!')
+                console.error('Caption with index ' + newCaption.index + 'does not exist!')
             }
 
             return {
                 captions: [...copiedCaptions]
             }
-        case DELETE_CAPTION:
+        }
+        case DELETE_CAPTION: {
             let caption = action.payload
-            let copiedCaptions = state.captions.splice()
+            let copiedCaptions = state.captions.slice()
 
             let removeIndex = -1
             for(let i=0; i<copiedCaptions.length; i++) {
@@ -112,6 +117,7 @@ function rootReducer(state, action) {
             return {
                 captions: [...copiedCaptions]
             }
+        }
         default:
             return state
     }
@@ -119,7 +125,9 @@ function rootReducer(state, action) {
 
 
 
-
+//STORE:
+const createStore = require('redux').createStore
+const store = createStore(rootReducer)
 
 
 
